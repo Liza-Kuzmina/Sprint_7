@@ -10,16 +10,12 @@ import ru.scooter.api.model.CourierCredentials;
 import static io.restassured.RestAssured.given;
 
 public class CourierClient {
-    private static final String BASE_URI = "https://qa-scooter.praktikum-services.ru";
     private static final String COURIER_PATH = "/api/v1/courier";
     private static final String LOGIN_PATH = "/api/v1/courier/login";
 
-    static {
-        io.restassured.RestAssured.baseURI = BASE_URI;
-    }
-
     private RequestSpecification getBaseSpec() {
         return given()
+                .baseUri(ApiConfig.BASE_URI)
                 .filter(new AllureRestAssured())
                 .header("Content-Type", "application/json");
     }

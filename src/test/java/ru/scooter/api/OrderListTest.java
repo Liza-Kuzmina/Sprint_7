@@ -5,8 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.scooter.api.client.OrderClient;
 import ru.scooter.api.model.Order;
-
-import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 
@@ -22,8 +21,8 @@ public class OrderListTest {
     private static final int STANDARD_DELIVERY_STATUS = 2;
 
     private void createTestOrders() {
-        Order fastDeliveryOrder = new Order("Ivan", "Ivanov", "Moscow, 1", "1", "+79991112233", 1, "2026-09-01", "Fast delivery", Arrays.asList("BLACK"));
-        Order standardDeliveryOrder = new Order("Petr", "Petrov", "SPb, 2", "2", "+78882223344", 2, "2026-10-01", "Standard delivery", Arrays.asList("GREY"));
+        Order fastDeliveryOrder = new Order("Ivan", "Ivanov", "Moscow, 1", "1", "+79991112233", FAST_DELIVERY_STATUS, "2026-09-01", "Fast delivery", List.of("BLACK"));
+        Order standardDeliveryOrder = new Order("Petr", "Petrov", "SPb, 2", "2", "+78882223344", STANDARD_DELIVERY_STATUS, "2026-10-01", "Standard delivery", List.of("GREY"));
 
         orderClient.create(fastDeliveryOrder);
         orderClient.create(standardDeliveryOrder);

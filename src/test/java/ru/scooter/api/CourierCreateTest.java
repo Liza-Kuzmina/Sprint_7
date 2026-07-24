@@ -1,7 +1,6 @@
 package ru.scooter.api;
 
 import io.restassured.response.ValidatableResponse;
-import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,13 +16,13 @@ import static org.hamcrest.Matchers.is;
 import io.qameta.allure.Step;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import static io.restassured.RestAssured.given;
-
 
 public class CourierCreateTest {
     private CourierClient courierClient;
     private int courierId;
     private String uniqueLogin;
+    private String savedLogin;
+    private String savedPassword;
     private static final Random RANDOM = new Random();
 
     @Before
@@ -33,7 +32,12 @@ public class CourierCreateTest {
     }
 
     @After
-    public void tearDown() {
+    @Step("Сохранение ID курьера после создания")
+    public void saveCourierIdAfterCreation() {
+        if (savedLogin != null && savedPassword != null) {
+            courierId = courierClient.login(new CourierCredentials(savedLogin, savedPassword))
+                    .extract().path("id");
+        }
         cleanupCreatedCourier();
     }
 
@@ -68,9 +72,8 @@ public class CourierCreateTest {
                 .statusCode(SC_CREATED)
                 .body("ok", is(true));
 
-        // Сохранение ID для очистки
-        courierId = courierClient.login(new CourierCredentials(uniqueLogin, "password123"))
-                .extract().path("id");
+        savedLogin = uniqueLogin;
+        savedPassword = "password123";
     }
 
     @Feature("Валидация данных курьера")
@@ -91,8 +94,8 @@ public class CourierCreateTest {
                 .statusCode(SC_CONFLICT)
                 .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
 
-        courierId = courierClient.login(new CourierCredentials(uniqueLogin, "password123"))
-                .extract().path("id");
+        savedLogin = uniqueLogin;
+        savedPassword = "password123";
     }
 
     @Feature("Валидация данных курьера")
