@@ -48,6 +48,7 @@ public class CourierLoginTest {
             try {
                 courierClient.delete(courierId);
             } catch (Exception e) {
+                System.err.println("Не удалось удалить курьера с ID: " + courierId + ", ошибка: " + e.getMessage());
             }
         }
     }
@@ -104,6 +105,19 @@ public class CourierLoginTest {
         CourierCredentials invalidCredentials = new CourierCredentials("", PASSWORD);
 
         // Act — попытка входа без логина
+        ValidatableResponse response = courierClient.login(invalidCredentials);
+
+        // Assert — ожидаем ошибку валидации
+        response
+                .statusCode(400)
+                .body("message", equalTo("Недостаточно данных для входа"));
+    }
+    @Test
+    public void loginWithoutPasswordReturnsError() {
+        // Arrange — данные без пароля
+        CourierCredentials invalidCredentials = new CourierCredentials(login, "");
+
+        // Act — попытка логина без пароля
         ValidatableResponse response = courierClient.login(invalidCredentials);
 
         // Assert — ожидаем ошибку валидации

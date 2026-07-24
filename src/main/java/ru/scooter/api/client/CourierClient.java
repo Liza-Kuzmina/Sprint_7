@@ -1,5 +1,6 @@
 package ru.scooter.api.client;
 
+import io.qameta.allure.Step;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
@@ -13,13 +14,17 @@ public class CourierClient {
     private static final String COURIER_PATH = "/api/v1/courier";
     private static final String LOGIN_PATH = "/api/v1/courier/login";
 
+    static {
+        io.restassured.RestAssured.baseURI = BASE_URI;
+    }
+
     private RequestSpecification getBaseSpec() {
         return given()
                 .filter(new AllureRestAssured())
-                .header("Content-Type", "application/json")
-                .baseUri(BASE_URI);
+                .header("Content-Type", "application/json");
     }
 
+    @Step("Создание курьера")
     public ValidatableResponse create(Courier courier) {
         return getBaseSpec()
                 .body(courier)
@@ -28,6 +33,7 @@ public class CourierClient {
                 .then();
     }
 
+    @Step("Авторизация курьера")
     public ValidatableResponse login(CourierCredentials credentials) {
         return getBaseSpec()
                 .body(credentials)
@@ -36,6 +42,7 @@ public class CourierClient {
                 .then();
     }
 
+    @Step("Удаление курьера")
     public ValidatableResponse delete(int courierId) {
         return getBaseSpec()
                 .when()

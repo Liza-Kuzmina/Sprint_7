@@ -18,12 +18,15 @@ public class OrderListTest {
         orderClient = new OrderClient();
     }
 
-    private void createTestOrders() {
-        Order order1 = new Order("Ivan", "Ivanov", "Moscow, 1", "1", "+79991112233", 1, "2026-09-01", "Fast delivery", Arrays.asList("BLACK"));
-        Order order2 = new Order("Petr", "Petrov", "SPb, 2", "2", "+78882223344", 2, "2026-10-01", "Standard delivery", Arrays.asList("GREY"));
+    private static final int FAST_DELIVERY_STATUS = 1;
+    private static final int STANDARD_DELIVERY_STATUS = 2;
 
-        orderClient.create(order1);
-        orderClient.create(order2);
+    private void createTestOrders() {
+        Order fastDeliveryOrder = new Order("Ivan", "Ivanov", "Moscow, 1", "1", "+79991112233", 1, "2026-09-01", "Fast delivery", Arrays.asList("BLACK"));
+        Order standardDeliveryOrder = new Order("Petr", "Petrov", "SPb, 2", "2", "+78882223344", 2, "2026-10-01", "Standard delivery", Arrays.asList("GREY"));
+
+        orderClient.create(fastDeliveryOrder);
+        orderClient.create(standardDeliveryOrder);
     }
 
     @Test

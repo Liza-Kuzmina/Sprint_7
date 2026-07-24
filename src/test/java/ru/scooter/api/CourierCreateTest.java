@@ -11,8 +11,12 @@ import ru.scooter.api.model.CourierCredentials;
 
 import java.util.Random;
 
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import io.qameta.allure.Step;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import static io.restassured.RestAssured.given;
 
 
@@ -37,15 +41,20 @@ public class CourierCreateTest {
         return "TestCourier_" + RANDOM.nextInt(100000);
     }
 
+    @Step("Очистка: удаление созданного курьера")
     private void cleanupCreatedCourier() {
         if (courierId != 0) {
             try {
                 courierClient.delete(courierId);
             } catch (Exception e) {
+                System.err.println("Не удалось удалить курьера с ID: " + courierId + ", ошибка: " + e.getMessage());
+
             }
         }
     }
 
+    @Feature("Работа с курьерами")
+    @Story("Создать курьера с уникальными данными")
     @Test
     public void courierCanBeCreated() {
         // Arrange
@@ -56,7 +65,7 @@ public class CourierCreateTest {
 
         // Assert
         response
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("ok", is(true));
 
         // Сохранение ID для очистки
@@ -64,6 +73,8 @@ public class CourierCreateTest {
                 .extract().path("id");
     }
 
+    @Feature("Валидация данных курьера")
+    @Story("Попытка создать двух курьеров с одинаковым логином")
     @Test
     public void cannotCreateTwoIdenticalCouriers() {
         // Arrange
@@ -77,13 +88,15 @@ public class CourierCreateTest {
 
         // Assert — ожидание ошибки конфликта
         dupResponse
-                .statusCode(409)
+                .statusCode(SC_CONFLICT)
                 .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
 
         courierId = courierClient.login(new CourierCredentials(uniqueLogin, "password123"))
                 .extract().path("id");
     }
 
+    @Feature("Валидация данных курьера")
+    @Story("Попытка создать курьера без логина")
     @Test
     public void cannotCreateCourierWithoutLogin() {
         // Arrange — курьер без логина
@@ -94,10 +107,12 @@ public class CourierCreateTest {
 
         // Assert — ожидаем ошибку валидации
         response
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
+    @Feature("Валидация данных курьера")
+    @Story("Попытка создать курьера без пароля")
     @Test
     public void cannotCreateCourierWithoutPassword() {
         // Arrange — курьер без пароля
@@ -108,7 +123,7 @@ public class CourierCreateTest {
 
         // Assert — ожидаем ошибку валидации
         response
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 }
